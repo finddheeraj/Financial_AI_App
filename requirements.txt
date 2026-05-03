@@ -1,5 +1,5 @@
 flask>=3.0
-llama-cpp-python>=0.2.0
+#llama-cpp-python>=0.2.0
 pydantic>=2.0
 python-dotenv>=1.0
 openai>=1.0
