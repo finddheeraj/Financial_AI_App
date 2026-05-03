@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial AI Agent — Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Financial Profile</h2>
+                <button class="btn-toggle" id="toggle-sidebar" title="Toggle sidebar">&#9776;</button>
+            </div>
+            <form id="profile-form" class="profile-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" required value="Rahul">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" min="18" max="100" required value="30">
+                </div>
+                <div class="form-group">
+                    <label for="annual_income">Annual Income (&#8377;)</label>
+                    <input type="number" id="annual_income" min="0" step="10000" required value="1200000">
+                </div>
+                <div class="form-group">
+                    <label for="monthly_expenses">Monthly Expenses (&#8377;)</label>
+                    <input type="number" id="monthly_expenses" min="0" step="1000" required value="40000">
+                </div>
+                <div class="form-group">
+                    <label for="current_savings">Current Savings (&#8377;)</label>
+                    <input type="number" id="current_savings" min="0" step="10000" required value="300000">
+                </div>
+                <div class="form-group">
+                    <label for="current_investments">Investments (&#8377;)</label>
+                    <input type="number" id="current_investments" min="0" step="10000" value="200000">
+                </div>
+                <div class="form-group">
+                    <label for="debt">Total Debt (&#8377;)</label>
+                    <input type="number" id="debt" min="0" step="10000" value="500000">
+                </div>
+                <div class="form-group">
+                    <label for="risk_tolerance">Risk Tolerance</label>
+                    <select id="risk_tolerance">
+                        <option value="conservative">Conservative</option>
+                        <option value="moderate" selected>Moderate</option>
+                        <option value="aggressive">Aggressive</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="time_horizon_years">Horizon (years)</label>
+                    <input type="number" id="time_horizon_years" min="1" max="50" value="10">
+                </div>
+                <div class="form-group">
+                    <label for="epf_monthly">Monthly EPF (&#8377;)</label>
+                    <input type="number" id="epf_monthly" min="0" step="500" value="1800">
+                </div>
+                <div class="form-group">
+                    <label for="hra_monthly">HRA Received (&#8377;)</label>
+                    <input type="number" id="hra_monthly" min="0" step="500" value="20000">
+                </div>
+                <div class="form-group">
+                    <label for="rent_monthly">Rent Paid (&#8377;)</label>
+                    <input type="number" id="rent_monthly" min="0" step="500" value="15000">
+                </div>
+                <div class="form-group">
+                    <label for="metro_city">City</label>
+                    <select id="metro_city">
+                        <option value="true" selected>Metro</option>
+                        <option value="false">Non-Metro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="financial_goals">Goals</label>
+                    <input type="text" id="financial_goals" placeholder="comma-separated" value="Buy a house, Build emergency fund, Save for retirement, Tax planning">
+                </div>
+                <div class="form-group">
+                    <label for="investment_preferences">Preferences</label>
+                    <input type="text" id="investment_preferences" placeholder="comma-separated" value="SIP Mutual Funds, PPF, NPS">
+                </div>
+            </form>
+            <p class="sidebar-hint">Profile is sent with your first message. Update and send again to refresh.</p>
+            <div class="sidebar-links">
+                <a href="/">Simple Mode</a>
+            </div>
+        </aside>
+
+        <main class="chat-panel">
+            <header class="chat-header">
+                <button class="btn-toggle mobile-toggle" id="mobile-toggle">&#9776;</button>
+                <h1>Financial AI Agent</h1>
+                <span class="badge">Agentic Mode</span>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="system-message">
+                    <p>Welcome! I'm your AI financial advisor for India. I can analyze your finances using real calculation tools and provide personalized guidance covering Indian tax regimes, Section 80C planning, SIP investments, NPS, PPF, and more.</p>
+                    <p>Try asking: <em>"Compare old vs new tax regime for my salary"</em> or <em>"How should I plan my 80C investments?"</em> or <em>"Am I on track for retirement at 60?"</em></p>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask a financial question..." autocomplete="off">
+                <button class="btn-send" id="btn-send">Send</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/vendor/marked.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor/chart.min.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/chat/index.js') }}"></script>
+</body>
+</html>
