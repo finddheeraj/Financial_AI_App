@@ -25,9 +25,8 @@ def run_agent(
     question: str,
     session_store,
 ) -> Generator[dict, None, None]:
-    from services.llm_service import get_model
+    from services.llm_service import chat_completion
 
-    model = get_model()
     max_iterations = getattr(Config, "AGENT_MAX_ITERATIONS", 5)
     step_tokens = getattr(Config, "AGENT_STEP_TOKENS", 300)
 
@@ -47,14 +46,13 @@ def run_agent(
 
     for _ in range(max_iterations):
         try:
-            response = model.create_chat_completion(
+            llm_output = chat_completion(
                 messages=messages,
                 max_tokens=step_tokens,
                 temperature=Config.TEMPERATURE,
                 top_p=Config.TOP_P,
                 stop=["Observation:", "Observation :"],
             )
-            llm_output = response["choices"][0]["message"]["content"] or ""
         except Exception as e:
             yield {"type": STEP_ERROR, "content": f"LLM error: {e}"}
             return

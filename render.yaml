@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: financial-ai-agent
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GROK_API_KEY
+        sync: false
+      - key: GROK_API_BASE
+        value: https://api.groq.com/openai/v1
+      - key: GROK_MODEL
+        value: grok-3-mini

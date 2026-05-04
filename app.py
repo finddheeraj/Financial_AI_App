@@ -35,6 +35,4 @@ def create_app() -> Flask:
 app = create_app()
 
 if __name__ == "__main__":
-    app = create_app()
-    print("Loading LLM model — this may take a minute on first request...")
     app.run(debug=True, port=5000)

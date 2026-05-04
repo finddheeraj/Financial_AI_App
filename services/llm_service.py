@@ -1,96 +1,55 @@
+from openai import OpenAI
 from config import Config
 
+_client = None
 
-class GrokModel:
-    def __init__(self):
-        from openai import OpenAI
-
-        self._client = OpenAI(
+def _get_client():
+    global _client
+    if _client is None:
+        _client = OpenAI(
             api_key=Config.GROK_API_KEY,
             base_url=Config.GROK_API_BASE,
         )
-        self._model = Config.GROK_MODEL
-
-    def create_chat_completion(
-        self,
-        messages,
-        max_tokens=None,
-        temperature=None,
-        top_p=None,
-        stop=None,
-        stream=False,
-    ):
-        kwargs = dict(
-            model=self._model,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            top_p=top_p,
-        )
-        if stop:
-            kwargs["stop"] = stop
-
-        if stream:
-            return self._stream(kwargs)
-
-        resp = self._client.chat.completions.create(**kwargs)
-        return {
-            "choices": [
-                {"message": {"content": resp.choices[0].message.content}}
-            ]
-        }
-
-    def _stream(self, kwargs):
-        kwargs["stream"] = True
-        for chunk in self._client.chat.completions.create(**kwargs):
-            content = ""
-            if chunk.choices and chunk.choices[0].delta:
-                content = chunk.choices[0].delta.content or ""
-            yield {"choices": [{"delta": {"content": content}}]}
-
-
-_model = None
-
-
-def get_model():
-    global _model
-    if _model is None:
-        if Config.USE_GROK_API:
-            _model = GrokModel()
-        else:
-            from llama_cpp import Llama
-
-            _model = Llama(
-                model_path=Config.MODEL_PATH,
-                n_ctx=Config.N_CTX,
-                n_gpu_layers=Config.N_GPU_LAYERS,
-                verbose=False,
-            )
-    return _model
-
+    return _client
 
 def generate(prompt: str, max_tokens: int | None = None) -> str:
-    model = get_model()
-    response = model.create_chat_completion(
+    client = _get_client()
+    response = client.chat.completions.create(
+        model=Config.GROK_MODEL,
         messages=[{"role": "user", "content": prompt}],
         max_tokens=max_tokens or Config.MAX_NEW_TOKENS,
         temperature=Config.TEMPERATURE,
         top_p=Config.TOP_P,
     )
-    return response["choices"][0]["message"]["content"]
-
+    return response.choices[0].message.content
 
 def generate_stream(prompt: str, max_tokens: int | None = None):
-    model = get_model()
-    stream = model.create_chat_completion(
+    client = _get_client()
+    response = client.chat.completions.create(
+        model=Config.GROK_MODEL,
         messages=[{"role": "user", "content": prompt}],
         max_tokens=max_tokens or Config.MAX_NEW_TOKENS,
         temperature=Config.TEMPERATURE,
         top_p=Config.TOP_P,
         stream=True,
     )
-    for chunk in stream:
-        delta = chunk["choices"][0].get("delta", {})
-        token = delta.get("content", "")
-        if token:
-            yield token
+    for chunk in response:
+        if chunk.choices and chunk.choices[0].delta:
+            content = chunk.choices[0].delta.content or ""
+            if content:
+                yield content
+
+def chat_completion(messages, max_tokens=None, temperature=None, top_p=None, stop=None):
+    client = _get_client()
+    kwargs = dict(
+        model=Config.GROK_MODEL,
+        messages=messages,
+        max_tokens=max_tokens or Config.MAX_NEW_TOKENS,
+        temperature=temperature or Config.TEMPERATURE,
+        top_p=top_p or Config.TOP_P,
+    )
+    if stop:
+        kwargs["stop"] = stop
+
+    response = client.chat.completions.create(**kwargs)
+    return response.choices[0].message.content or ""
