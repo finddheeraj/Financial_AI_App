@@ -26,7 +26,7 @@ Running Locally
 4. Create a .env file
 5. Add your Grok API Key and following environmnet variables
    
-   GROK_API_KEY=<your key goes here>
+   GROK_API_KEY= (paste your key)
    GROK_API_BASE=https://api.groq.com/openai/v1
    GROK_MODEL=llama-3.1-8b-instant
 7. python app.py
